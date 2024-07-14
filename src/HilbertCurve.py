@@ -4,7 +4,8 @@ import array
 
 class HilbertCurve:
     def __init__(self):
-        pass
+        self.generated = []
+        self.generated.append(self.order1())
 
     def order1(self):
         output = []
@@ -41,6 +42,9 @@ class HilbertCurve:
         return output
 
     def generate(self, order: int):
+        if len(self.generated) >= order:
+            return self.generated[order-1]
+
         if order == 1:
             return self.order1()
 
@@ -48,19 +52,25 @@ class HilbertCurve:
         clockwiseRotationLowerOrder = self.rotate(lowerOrder, True)
         counterClockwiseRotationLowerOrder = self.rotate(lowerOrder, False)
 
+        size = [len(lowerOrder), len(lowerOrder[0])]
+        topLeft = size[0]*size[1]
+        topRight = size[0]*size[1]*2
+        bottomRight = size[0]*size[1]*3
+
         output = []
-        for i in range(len(lowerOrder)*2):
+        for i in range(size[0]*2):
             temp = []
-            for j in range(len(lowerOrder[0])*2):
-                size = [len(lowerOrder), len(lowerOrder[0])]
+            for j in range(size[1]*2):
                 if i >= size[0] and j < size[1]: # bottom left
                     temp.append(clockwiseRotationLowerOrder[i-size[0]][j])
                 elif i < size[0] and j < size[1]: # top left
-                    temp.append(lowerOrder[i][j] + (size[0]*size[1]))
+                    temp.append(lowerOrder[i][j] + topLeft)
                 elif i < size[0] and j >= size[1]: # top right
-                    temp.append(lowerOrder[i][j-size[1]] + (size[0]*size[1]*2))
+                    temp.append(lowerOrder[i][j-size[1]] + topRight)
                 elif i >= size[0] and j >= size[1]: # bottom right
-                    temp.append(counterClockwiseRotationLowerOrder[i-size[0]][j-size[1]] + (size[0]*size[1]*3))
+                    temp.append(counterClockwiseRotationLowerOrder[i-size[0]][j-size[1]] + bottomRight)
             output.append(temp)
 
+        self.generated.append(output)
+        print("new generated: " + str(order))
         return output
